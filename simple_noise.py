@@ -34,8 +34,8 @@ def calculate_net_and_nep(f_GHz,system_efficiency,T_det,atmosphere_transmission,
 
     shot = 2*k*T_det*h*f*df
     wave = 2*(P0)**2.0 / df
-    print 'Shot noise = '+str(nm.sqrt(nm.sum(shot))*1.0e18)+' aWrtHz'
-    print 'Wave noise = '+str(nm.sqrt(nm.sum(wave))*1.0e18)+' aWrtHz'
+    print('Shot noise = '+str(nm.sqrt(nm.sum(shot))*1.0e18)+' aWrtHz')
+    print('Wave noise = '+str(nm.sqrt(nm.sum(wave))*1.0e18)+' aWrtHz')
     # this nep will be "low" because bad optical efficiency has reduced the as-seen loading
     nep = nm.sqrt(shot+wave)# watts root second
 
@@ -84,6 +84,8 @@ fcent_nom = (fmin+fmax)/2.0
 passband = nm.zeros_like(f_GHz) + 1e-10 # literally zero will make noise infinite, which may mess up the sum later?
 passband[(f_GHz>fmin) & (f_GHz<fmax)] = 1.0
 
+print('Apparent Atmospheric Temperature = '+str(nm.sum(passband*T_atm)/nm.sum(passband))+' K')
+
 pl.ion()
 pl.figure(100)
 pl.plot(f_GHz,passband)
@@ -108,7 +110,7 @@ T_det = (T_atm+T_excess)*detector_optical_efficiency*passband*aperture_efficienc
 telescope_diameter = 50.0
 
 fwhm_arcsec = (50.0/telescope_diameter)*(280.0/fcent_nom)*5.0
-print 'Nominal beam assumed to be '+str(fwhm_arcsec)+' arcseconds'
+print('Nominal beam assumed to be '+str(fwhm_arcsec)+' arcseconds')
 
 fnum = 2 # f number at focal plane array
 
@@ -118,7 +120,7 @@ area = area*(25.4)**2 # millimeters
 Ndet = area / (fnum*(300.0/fcent_nom))**2.0
 Ndet = nm.round(Ndet)
 Ndet = 2*Ndet # double the number because they're polarized
-print 'Polarized detectors in a 6-inch array = '+str(Ndet)
+print('Polarized detectors in a 6-inch array = '+str(Ndet))
 
 
 # calculate system efficiency
@@ -133,11 +135,11 @@ P0,net,nefd,nep_at_detector = calculate_net_and_nep(f_GHz,
                                                     T_det,
                                                     atm_tx,
                                                     telescope_diameter)
-print 'Center Frequency = '+str(fcent_nom)+' GHz'
-print 'Loading = '+str(P0*1.0e12)+' pW'
-print 'NEP at Detector = '+str(nep_at_detector)+' aWrts'
-print 'NET_CMB = '+str(net)+' uKrts'
-print 'NEFD = '+str(nefd)+' mJrts'
+print('Center Frequency = '+str(fcent_nom)+' GHz')
+print('Loading = '+str(P0*1.0e12)+' pW')
+print('NEP at Detector = '+str(nep_at_detector)+' aWrts')
+print('NET_CMB = '+str(net)+' uKrts')
+print('NEFD = '+str(nefd)+' mJrts')
 
 # convert nefd into mapping speed of TolTEC instrument
 
@@ -157,6 +159,6 @@ print 'NEFD = '+str(nefd)+' mJrts'
 N_beams_in_sqdeg = (60.0*60.0)**2 / ((fwhm_arcsec**2)*(nm.pi/(4.0*nm.log(2.0))))
 mapping_speed = (1.0/nefd)**2 * Ndet * (3600.0/N_beams_in_sqdeg)
 
-print ' '
-print 'Mapping Speed, Raw = '+str(mapping_speed)+' deg^2/mJ^2/hr'
-print 'Mapping Speed, Downscaled = '+str(mapping_speed*(26.0/184.0))+' deg^2/mJ^2/hr'
+print(' ')
+print('Mapping Speed, Raw = '+str(mapping_speed)+' deg^2/mJ^2/hr')
+print('Mapping Speed, Downscaled = '+str(mapping_speed*(26.0/184.0))+' deg^2/mJ^2/hr')
